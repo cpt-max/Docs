@@ -19,14 +19,14 @@ The following table shows how shader models are mapped to GLSL and OpenGL versio
 |Shader model                                                                                                                                               | GLSL <br> (desktop)    | ESSL <br> (mobile) | OpenGL <br> (desktop) | OpenGL ES <br> (mobile) | Shader stages <br> (desktop) | Shader stages <br> (mobile) | 
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|--------------------|-----------------------|-------------------------|------------------------------|-----------------------------|
 |vs_2_0, ps_2_0 <br> vs_3_0, ps_3_0 <br> vs_4_0_level_9_1, ps_4_0_level_9_1 <br> vs_4_0_level_9_2, ps_4_0_level_9_2 <br> vs_4_0_level_9_3, ps_4_0_level_9_3 | 110                    | 100                | 2.0                   | 2.0                     |                              |                             |
-|vs_4_0, ps_4_0 <br> vs_4_1, ps_4_1                                                                                                                         | 330                    | 300 es             | 3.3                   | 3.0                     | GS, TESS                     |                             |
+|vs_4_0, ps_4_0 <br> vs_4_1, ps_4_1                                                                                                                         | 330                    | 300 es             | 3.3 + SSO*            | 3.0 + SSO*              | GS, TESS                     |                             |
 |vs_5_0, ps_5_0                                                                                                                                             | 430                    | 320 es             | 4.3                   | 3.2                     | GS, TESS, CS                 | GS, TESS, CS                |
 
-<br>
+\* SSO: requires separate shader objects extension.
 
 ### Shader stages
 - GS: Geometry shader
 - TESS: Tesselation shader (Hull and Domain)
 - CS: Compute shader
 
-The shader stages are not yet functional. This will hopefully change soon.
+Compute shaders are not yet functional.
