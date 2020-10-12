@@ -75,10 +75,12 @@ Boolean shader parameters are represented by integers in GLSL. As a consequence 
 effect.Parameters["EnableLighting"].SetValue(true);
 ```
 You will notice the difference if you reflect on the parameter type though. A shader editor might do such a thing in order to create a checkbox for booleans, and a value field for integers. Hopefully this limitation can be resolved in the future.  
-<hr><hr><hr>
+
+<br><br><br>
+<hr>
 
 ## Shader model 2 and 3 limitations
-Some extra limitations apply when shader model 2 or 3 is used. This is necessary for supporting OpenGL 2. OpenGL 2 is considered a legacy target now. You should always use shader models 4 or higher if you can afford it (vs_4_0, ps_4_0).
+Some extra limitations apply when shader model 2 or 3 is used. This is necessary for supporting OpenGL 2. OpenGL 2 is considered a legacy target now. You should always use shader models 4 or higher if you can afford it (vs_4_0, ps_4_0). 
 
 ## No unsigned int with shader model 2 and 3
 This is a current limitation of SPIRV-Cross. Unfortunately array indices are converted to unsigned int by DirectXShaderCompiler, so this will generate an error.
