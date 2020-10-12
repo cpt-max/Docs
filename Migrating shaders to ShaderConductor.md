@@ -4,14 +4,14 @@
 ShaderConductor is used when shaders are compiled for OpenGL platforms like DesktopGL, Android or iOS. 
 In order to compile successfully some modifications to the HLSL source code may be neccessary.
 
-## COLOR semantic on pixel shader becomes SV_TARGET
+## SV prefix for shader semantics
+Pixel shaders in MojoShader used the COLOR and DEPTH output semantic, now it's SV_POSITION and SV_DEPTH.
+In order to pass vertex positions from the vertex to the pixel shader, the POSITION semantic was used in the past, this needs to be SV_POSITION now.
 ```HLSL
-float4 MyPixelShader(VertexOut input) : COLOR
+float4 MyVertexShader(float4 inputPos: POSITION) : SV_POSITION
 { ... }
-```
-becomes
-```HLSL
-float4 MyPixelShader(VertexOut input) : SV_TARGET
+
+float4 MyPixelShader() : SV_TARGET
 { ... }
 ```
 
@@ -69,8 +69,19 @@ sampler MySampler : register(s0);
 GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 ```
 
-## No unsigned int when targeting OpenGL 2
-This is a current limitation of SPIRV-Cross. It only affects shader models older than 4, so the simple solution is to use vs_4_0 and ps_4_0 or newer, if you can afford it. Unfortunately array indices are converted to unsigned int by DirectXShaderCompiler, so this will generate an error.
+## Bool parameters get converted to int
+Boolean shader parameters are represented by integers in GLSL. As a consequence the parameter type in the effect's parameter collection will be EffectParameterType.Int32. In DirectX that same parameter will be of type EffectParameterType.Bool. Generally you won't notice this difference, because the standard pattern for setting bool parameters still works, even though under the hood it's an int:
+```C#
+effect.Parameters["EnableLighting"].SetValue(true);
+```
+You will notice the difference if you reflect on the parameter type though. A shader editor might do such a thing in order to create a checkbox for booleans, and a value field for integers. Hopefully this limitation can be resolved in the future.  
+<hr><hr><hr>
+
+## Shader model 2 and 3 limitations
+Some extra limitations apply when shader model 2 or 3 is used. This is necessary for supporting OpenGL 2. OpenGL 2 is considered a legacy target now. You should always use shader models 4 or higher if you can afford it (vs_4_0, ps_4_0).
+
+## No unsigned int with shader model 2 and 3
+This is a current limitation of SPIRV-Cross. Unfortunately array indices are converted to unsigned int by DirectXShaderCompiler, so this will generate an error.
 ```HLSL
 for(int i=0; i<10; i++)
     sum += someArray[i];
@@ -82,17 +93,5 @@ sum += someArray[1];
 ...
 ```
 
-## Array parameters not yet functional when targeting OpenGL 2
+## Array parameters not yet functional with shader model 2 and 3
 Updating a shader array via effect parameters only works for vs_4_0 and ps_4_0 or newer. This is no ShaderConductor limitation, it's just not yet implemented on the MonoGame side. 
-
-## Negating a matrix
-This will currently fail
-```HLSL
-someMatrix = -someMatrix;
-```
-However, this will work
-```HLSL
-someMatrix = someMatrix * -1;
-```
-This is already [fixed in DirectXShaderCompiler](https://github.com/microsoft/DirectXShaderCompiler/commit/8ffccecea1ed20eba397a304e482772d3bc5777f), but the change has not yet made it into the current version of ShaderConductor.
-
