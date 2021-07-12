@@ -97,3 +97,6 @@ sum += someArray[1];
 
 ## Array parameters not yet functional with shader model 2 and 3
 Updating a shader array via effect parameters only works for vs_4_0 and ps_4_0 or newer. This is no ShaderConductor limitation, it's just not yet implemented on the MonoGame side. 
+
+## Non square matrices are not supported with shader model 2 and 3
+
