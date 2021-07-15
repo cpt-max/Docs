@@ -28,5 +28,3 @@ The following table shows how shader models are mapped to GLSL and OpenGL versio
 - GS: Geometry shader
 - TESS: Tesselation shader (Hull and Domain)
 - CS: Compute shader
-
-Compute shaders are not yet functional.
