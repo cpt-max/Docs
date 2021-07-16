@@ -115,16 +115,16 @@ This is a bad idea, as it might lead to frequent switches between regular drawin
 ## 4.) Download the data in the StructuredBuffer to the CPU
 
 If the goal is to use the compute shader results for graphical effects, you should, if possible, avoid downloading the data to the CPU, and use it directly in other shader stages, as shown in the next step. 
-If the data needs to be used the CPU, or you want to take a look at it for debugging purposes, you can get the data just like you would with a VertexBuffer.
+If the data needs to be used by the CPU, or you want to take a look at it for debugging purposes, you can get the data, just like you would with a VertexBuffer:
 
-```
+```C#
 var particles = new Particles[ParticleCount];
 particleBuffer.GetData(particles, 0, ParticleCount);
 ```
 <br>
 
 
-## 5.) Consume the StructuredBuffer directly in other shader stages
+## 5.) Consume the StructuredBuffer directly in other shader stages:
 
 You can't access an RWStructuredBuffer directly in non-compute stages, at least not in DirectX 11. 
 Instead you need to add a regular StructuredBuffer in HLSL
@@ -141,7 +141,7 @@ VertexOut VS(in VertexIn input)
 }
 ```
 
- and assign it the same buffer in C#.
+ and assign it the same buffer in C#:
  
 ```C#
 effect.Parameters["ParticlesReadOnly"].SetValue(particleBuffer);
