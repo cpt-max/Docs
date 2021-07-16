@@ -1,4 +1,4 @@
-# Setting up compute shaders in MonoGame
+# Compute Shader Guide for MonoGame
 
 A compute shader performs arbitrary calculations on the GPU. The resulting output is written to a buffer, which can then be consumed by other shader stages, or downloaded to the CPU.<br>
 Currently this buffer has to be a StructuredBuffer, eventually it should also be possible to write to a VertexBuffer or a Texture directly, and maybe other, less commonly used buffer types.
