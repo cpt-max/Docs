@@ -94,6 +94,17 @@ foreach (var pass in effect.CurrentTechnique.Passes)
 }
 ```
 
+The total number of particles computed in this case is ```groupCountX``` times ```ComputeGroupSize``` from the compute shader HLSL. 
+```groupCountX``` could be calculated like this:
+
+```C#
+// if ParticleCount is a multiple of ComputeGroupSize
+int groupCountX = ParticleCount / ComputeGroupSize;
+
+// otherwise
+int groupCountX = (int)Math.Ceiling((double)ParticleCount / ComputeGroupSize);
+```
+
 If a pass does not contain a compute shader, the ```ApplyCompute``` and ```DispatchCompute``` calls will be ignored.
 
 If the compute shader is part of the same technique as a vertex shader, you might be tempted to execute the compute shader in the same loop, that also draws the primitives. 
