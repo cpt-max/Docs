@@ -1,17 +1,17 @@
 # Compute Shader Guide for MonoGame
 
-A compute shader performs arbitrary calculations on the GPU. The resulting output is written to a buffer, which can then be consumed by other shader stages, or downloaded to the CPU.<br>
-Currently this buffer has to be a StructuredBuffer, eventually it should also be possible to write to a VertexBuffer or a Texture directly, and maybe other, less commonly used, buffer types.
+A compute shader performs arbitrary calculations on the GPU. The resulting output is written to a buffer or a texture, which can then be consumed by other shader stages, or downloaded to the CPU.<br>
+Currently only StructuredBuffer and Texture2D is supported for output, eventually it should also be possible to write to a VertexBuffer, and maybe other, less commonly used, output types.
 
-The shown code snippets are mostly taken from this [sample project](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_gpu_particles).
+The shown code snippets are mostly taken from this [sample project](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_gpu_particles), which uses a StructuredBuffer. At the end you will also find information on how to write to a texture instead of a buffer.
 <br><br>
 
-## 1.) Adding the compute shader HLSL
+## 1.) Add the compute shader HLSL
 
 The compute shader itself can be added to an fx file, just like any other shader. A basic setup might look something like this:
 
 ```HLSL
-#define ComputeGroupSize 64
+#define GroupSize 64
 
 struct Particle
 {
@@ -21,8 +21,8 @@ struct Particle
 
 RWStructuredBuffer<Particle> Particles;
 
-[numthreads(ComputeGroupSize, 1, 1)]
-void CS(uint3 localID : SV_GroupThreadID, uint3 dispatchID : SV_GroupID,
+[numthreads(GroupSize, 1, 1)]
+void CS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
         uint  localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
 {
     Particle p = Particles[globalID.x]; 
@@ -63,7 +63,7 @@ StructuredBuffer particleBuffer;
 
 protected override void LoadContent()
 {
-    particleBuffer = new StructuredBuffer(GraphicsDevice, typeof(Particle), MaxParticleCount, BufferUsage.None, true);
+    particleBuffer = new StructuredBuffer(GraphicsDevice, typeof(Particle), MaxParticleCount, BufferUsage.None, ShaderAccess.ReadWrite);
 
     // optionally initialize the buffer
     var particles = new Particle[MaxParticleCount];
@@ -73,7 +73,8 @@ protected override void LoadContent()
     particleBuffer.SetData(particles);
 }
 ```
-<br>
+If a StructuredBuffer is only read from in the compute shader, the last constructor parameter can also be set to ShaderAccess.Read.
+<br><br>
 
 
 ## 3.) Execute the compute shader
@@ -121,10 +122,10 @@ If the data needs to be used by the CPU, or you want to take a look at it for de
 var particles = new Particles[ParticleCount];
 particleBuffer.GetData(particles, 0, ParticleCount);
 ```
-<br>
+<br><br>
 
 
-## 5.) Consume the StructuredBuffer directly in other shader stages:
+## 5.) Consume the StructuredBuffer directly in other shader stages
 
 You can't access an RWStructuredBuffer directly in non-compute stages, at least not in DirectX 11. 
 Instead you need to add a regular StructuredBuffer in HLSL
@@ -146,7 +147,49 @@ VertexOut VS(in VertexIn input)
 ```C#
 effect.Parameters["ParticlesReadOnly"].SetValue(particleBuffer);
 ```
+<br><br>
 
+
+## 6.) Write to texture from compute shader
+
+A sample project demonstrating writing to textures can be found [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_write_to_texture).
+
+A compute shader for texture output looks very much like a compute shader for buffer output. 
+```HLSL
+#define GroupSizeXY 8
+
+RWTexture2D<float4> Texture;
+
+[numthreads(GroupSizeXY, GroupSizeXY, 1)]
+void CS(uint3 localID : SV_GroupThreadID, uint3 grouphID : SV_GroupID,
+        uint  localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
+{
+    float4 pixel = Texture[globalID.xy];
+    
+    // update pixel
+
+    Texture[globalID.xy] = pixel;
+}
+```
+
+The only real difference is that an RWTexture2D is used, instead of an RWStructuredBuffer. 
+
+The output texture is created in C# just like a normal texture, but you have to use the constructor overload with the ShaderAccess parameter, and set it to ReadWrite:
+```C#
+computeTexture = new Texture2D(GraphicsDevice, width, height, false, SurfaceFormat.Color, ShaderAccess.ReadWrite);
+```
+
+The texture is bound to the compute shader by assigning it to the corresponding effect parameter:
+```C#
+effect.Parameters["Texture"].SetValue(computeTexture);
+
+foreach (var pass in effect.CurrentTechnique.Passes)
+{
+    pass.ApplyCompute();
+    GraphicsDevice.DispatchCompute(groupCountX, groupCountY, 1);
+}
+```
+<br><br>
 
 
 
