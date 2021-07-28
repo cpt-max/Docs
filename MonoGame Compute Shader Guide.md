@@ -1,9 +1,9 @@
 # Compute Shader Guide for MonoGame
 
 A compute shader performs arbitrary calculations on the GPU. The resulting output is written to a buffer or a texture, which can then be consumed by other shader stages, or downloaded to the CPU.<br>
-Currently only StructuredBuffer and Texture2D is supported for output, eventually it should also be possible to write to a VertexBuffer, and maybe other, less commonly used, output types.
 
-The shown code snippets are mostly taken from this [sample project](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_gpu_particles), which uses a StructuredBuffer. At the end you will also find information on how to write to a texture instead of a buffer.
+The code snippets in the beginning of this guide are mostly taken from this [sample project](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_gpu_particles), which uses a compute shader to fill a StructuredBuffer. 
+While using a StructuredBuffer is probably the most common and flexible use case, you can also write to textures, vertex or index buffers directly. More information about those can be found at the end of this guide.
 <br><br>
 
 ## 1.) Add the compute shader HLSL
@@ -150,7 +150,7 @@ effect.Parameters["ParticlesReadOnly"].SetValue(particleBuffer);
 <br><br>
 
 
-## 6.) Write to texture from compute shader
+## 6.) Write directly to textures
 
 A sample project demonstrating writing to textures can be found [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_write_to_texture).
 
@@ -190,6 +190,79 @@ foreach (var pass in effect.CurrentTechnique.Passes)
 }
 ```
 <br><br>
+
+
+## 7.) Write to vertex and index buffers
+
+A sample project demonstrating writing to vertex and index buffers can be found [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_write_to_vertex_buffer).
+
+In order to access a vertex buffer from a compute shader a ByteAddressBuffer (readonly) or RWByteAddressBuffer (writeable) needs to be defined: 
+```HLSL
+#define GroupSizeXY 64
+
+RWByteAddressBuffer Vertices;
+
+[numthreads(GroupSize, 1, 1)]
+void CS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
+        uint  localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
+{
+    uint vertexID = globalID.x;
+    uint posByteInd = vertexID * 32; // 32 bytes per vertex element: float3 position, float3 normal, float2 texCoord => 8 floats => 32 bytes 
+    uint normByteInd = posByteInd + 12; // 12 is the byte size for the float3 position element
+    
+    float3 pos  = asfloat(Vertices.Load3(vertexByteInd));
+    float3 norm = asfloat(Vertices.Load3(normByteInd)); 
+    
+    // modify pos and norm
+
+    Vertices.Store3(vertexByteInd, asuint(pos));
+    Vertices.Store3(normByteInd, asuint(norm));
+}
+```
+The Load, Load2, Load3 and Load4 functions return uint's, and the corresponding Store functions expect uint's, that's why the asfloat/asuint conversions are neccessary.
+
+A similar compute shader for index buffer access could look like this:
+```HLSL
+#define GroupSizeXY 64
+
+RWByteAddressBuffer Indices;
+
+[numthreads(GroupSize, 1, 1)]
+void CS_FlipIndices(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
+        uint localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
+{
+    uint indexID = globalID.x; 
+    uint index = Indices.Load(indexID * 4); // with IndexElementSize.ThirtytwoBits every index is 4 bytes. 
+    
+    // modify index
+
+    Indices.Store(indexID * 4, index);
+}
+```
+
+Beware that things get a bit more complicated with 16 bit indices (see sample project), as bitwise operations are needed to extract the 16 bit indices out of the 32 bit values read from the buffer.
+
+Similar to textures, a vertex or index buffer needs to be created with the ShaderAccess parameter set to ReadWrite or Read, in order to be accessible from compute shaders:
+```C#
+vertexBuffer = new VertexBuffer(GraphicsDevice, VertexPositionNormalTexture.VertexDeclaration, vertexCount, BufferUsage.WriteOnly, ShaderAccess.ReadWrite);
+indexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.ThirtyTwoBits, indexCount, BufferUsage.WriteOnly, ShaderAccess.ReadWrite);
+```
+
+The buffers are bound to the compute shader by assigning them to the corresponding effect parameters:
+```C#
+effect.Parameters["Vertices"].SetValue(vertexBuffer);
+effect.Parameters["Indices"].SetValue(indexBuffer);
+
+foreach (var pass in effect.CurrentTechnique.Passes)
+{
+    pass.ApplyCompute();
+    GraphicsDevice.DispatchCompute(groupCount, 1, 1);
+}
+```
+<br><br>
+
+
+
 
 
 
