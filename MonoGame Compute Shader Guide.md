@@ -122,6 +122,7 @@ If the data needs to be used by the CPU, or you want to take a look at it for de
 var particles = new Particles[ParticleCount];
 particleBuffer.GetData(particles, 0, ParticleCount);
 ```
+If you have bool parameters in your struct, you will currently get an exception here, telling you that bool is not a blittable type. Just use int instead.
 <br><br>
 
 
@@ -147,12 +148,15 @@ VertexOut VS(in VertexIn input)
 ```C#
 effect.Parameters["ParticlesReadOnly"].SetValue(particleBuffer);
 ```
+
+While in DX you can read from a StructuredBuffer using shader model 4, in OpenGL you neeed to use shader model 5 (e.g. vs_5_0). 
 <br><br>
 
 
 ## 6.) Write directly to textures
 
-A sample project demonstrating writing to textures can be found [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_write_to_texture).
+A sample project demonstrating writing to textures can be found [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_write_to_texture),<br>
+and for 3D textures there's another sample [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_write_to_3d_texture).
 
 A compute shader for texture output looks very much like a compute shader for buffer output. 
 ```HLSL
@@ -161,7 +165,7 @@ A compute shader for texture output looks very much like a compute shader for bu
 RWTexture2D<float4> Texture;
 
 [numthreads(GroupSizeXY, GroupSizeXY, 1)]
-void CS(uint3 localID : SV_GroupThreadID, uint3 grouphID : SV_GroupID,
+void CS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
         uint  localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
 {
     float4 pixel = Texture[globalID.xy];
@@ -174,7 +178,7 @@ void CS(uint3 localID : SV_GroupThreadID, uint3 grouphID : SV_GroupID,
 
 The only real difference is that an RWTexture2D is used, instead of an RWStructuredBuffer. 
 
-The output texture is created in C# just like a normal texture, but you have to use the constructor overload with the ShaderAccess parameter, and set it to ReadWrite:
+The output texture is created in C# just like a normal texture, but you have to add the ShaderAccess parameter, and set it to ReadWrite:
 ```C#
 computeTexture = new Texture2D(GraphicsDevice, width, height, false, SurfaceFormat.Color, ShaderAccess.ReadWrite);
 ```
@@ -228,7 +232,7 @@ A similar compute shader for index buffer access could look like this:
 RWByteAddressBuffer Indices;
 
 [numthreads(GroupSize, 1, 1)]
-void CS_FlipIndices(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
+void CS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
         uint localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
 {
     uint indexID = globalID.x; 
