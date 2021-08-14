@@ -333,7 +333,7 @@ or make an indirect dispatch call like this
 foreach (var pass in effect.CurrentTechnique.Passes)
 {
     pass.ApplyCompute();
-    GraphicsDevice.DispatchIndirect(indirectDispatchBuffer);
+    GraphicsDevice.DispatchComputeIndirect(indirectDispatchBuffer);
 }
 ```
 
