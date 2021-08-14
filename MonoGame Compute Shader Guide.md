@@ -3,7 +3,7 @@
 A compute shader performs arbitrary calculations on the GPU. The resulting output is written to a buffer or a texture, which can then be consumed by other shader stages, or downloaded to the CPU.<br>
 
 The code snippets in the beginning of this guide are mostly taken from this [sample project](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_gpu_particles), which uses a compute shader to fill a StructuredBuffer. 
-While using a StructuredBuffer is probably the most common and flexible use case, you can also write to textures, vertex or index buffers directly. More information about those can be found at the end of this guide.
+While using a StructuredBuffer is probably the most common and flexible use case, you can also write to textures, vertex or index buffers directly. More information about those, as well as information about indirect drawing, can be found at the end of this guide.
 <br><br>
 
 ## 1.) Add the compute shader HLSL
@@ -263,6 +263,83 @@ foreach (var pass in effect.CurrentTechnique.Passes)
     GraphicsDevice.DispatchCompute(groupCount, 1, 1);
 }
 ```
+<br><br>
+
+
+## 7.) Indirect drawing
+
+When objects are beeing processed in a compute shader, the CPU sometimes doesn't know how many objects need to be drawn, especially when the compute shader is responsible for spawn and destroy. Possible ways to deal with situations like these could be:
+
+- always draw the maximum number of objects possible, making sure unused objects are not visible in the end. Disadvantage: Drawing more objects than needed and complicating  shaders, as they need to discard unused objects (e.g. collapsing vertices into a single point)
+- write the number of active objects into a buffer in a compute shader, then download that data to the CPU for drawing. Disadvantage: GPU and CPU are forced to synchronize, which can be very bad for performance.
+
+With indirect draw a 3rd option becomes available. Like with option 2 the total number of active objects is written into a buffer from a compute shader, but that data never gets downloaded to the CPU. When it's time to draw, instead of passing the number of objects directly to the draw call, the buffer containing the instance count is passed.
+
+A simple sample project demonstrating indirect draw can be found [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/object_culling_indirect_draw).
+
+The indirect draw buffer, containing the arguments for the draw call, is created just like other buffer types:
+```C#
+indirectDrawBuffer = new IndirectDrawBuffer(GraphicsDevice, BufferUsage.None, ShaderAccess.ReadWrite);
+```
+By default the indirect draw buffer will have space for 5 unsigned integers, which is enough for all of the 3 possible indirect draw/dispatch calls. You can also provide the number of uint's in the buffer as the last parameter. That way you can fit multiple draw calls into the same buffer, or have space for some extra variables.
+
+You probably want to initialize the indirect draw buffer on the CPU. Usually not all draw parameters need to be dynamic, very often only the instance count is. Also you may need to reset the instance count in the buffer to zero every frame, so the compute shader can then increment it by one for every active instance.
+```C#
+indirectDrawBuffer.SetData(new DrawIndexedInstancedArguments
+{
+    IndexCountPerInstance = indexBuffer.IndexCount,
+    InstanceCount = 0,
+    StartIndexLocation = 0,
+    BaseVertexLocation = 0,
+    StartInstanceLocation = 0,
+});
+```
+For every draw/dispatch call variant (DrawIndexedInstanced, DrawInstanced and DispatchCompute), there's a SetData variant taking the respective argument struct as a parameter (DrawIndexedInstancedArguments, DrawInstancedArguments and DispatchComputeArguments). Alternatively you can also set the data using an array of uint's, just like with other buffer types.
+
+The compute shader updates the dynamic draw arguments in the buffer. The instance count is commonly updated using an atomic/interlocked counter.  
+```HLSL
+#define GroupSize 64
+
+RWByteAddressBuffer IndirectDraw;
+
+[numthreads(GroupSize, 1, 1)]
+void CS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
+        uint  localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
+{
+    bool isObjectVisible = ...
+    if (isObjectVisible)
+    {    
+        uint outID;
+        IndirectDraw.InterlockedAdd(4, 1, outID); // increment the instance count in the indirect draw buffer (starts at byte 4) 
+        ObjectsToDraw[outID] = ...; // add the object to the output buffer, this buffer will later be read by the vertex shader that draws the objects
+    }
+}
+```
+Indirect draw buffers have to be declared as ByteAddressBuffer's in the shader. That means positions in the buffer have to be given in bytes. Every uint in the buffer is 4 bytes. If the instance count is the 2nd argument in the buffer, the corresponding byte position is 4, as the first uint before it will take 4 bytes. 
+
+Draw the objects using one of the 2 indirect draw calls DrawIndexedInstancedPrimitivesIndirect or DrawInstancedPrimitivesIndirect
+```C#
+GraphicsDevice.SetVertexBuffer(vertexBuffer);
+GraphicsDevice.Indices = indexBuffer;
+    
+foreach (var pass in effect.CurrentTechnique.Passes)
+{
+    pass.Apply();
+    GraphicsDevice.DrawIndexedInstancedPrimitivesIndirect(PrimitiveType.TriangleList, indirectDrawBuffer);
+}
+```
+or make an indirect dispatch call like this
+```C#
+foreach (var pass in effect.CurrentTechnique.Passes)
+{
+    pass.ApplyCompute();
+    GraphicsDevice.DispatchIndirect(indirectDispatchBuffer);
+}
+```
+
+A more complex indirect draw sample can be found [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/indirect_draw_instances).
+See the description in the readme for more details.
+
 <br><br>
 
 
