@@ -266,7 +266,7 @@ foreach (var pass in effect.CurrentTechnique.Passes)
 <br><br>
 
 
-## 7.) Indirect drawing
+## 8.) Indirect drawing
 
 When objects are beeing processed in a compute shader, the CPU sometimes doesn't know how many objects need to be drawn, especially when the compute shader is responsible for spawn and destroy. Possible ways to deal with situations like these could be:
 
