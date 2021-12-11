@@ -1,8 +1,17 @@
 
-# Migrating shaders to ShaderConductor
+# Migrating Shaders from MojoShader to ShaderConductor
 
-ShaderConductor is used when shaders are compiled for OpenGL platforms like DesktopGL, Android or iOS. 
-In order to compile successfully some modifications to the HLSL source code may be neccessary.
+This only applies to OpenGL platforms.
+The good news is, you don't neccessarily have to migrate existing shaders, as MojoShader is still included. ShaderConductor will be used by default for shader compilation, but you can override this behaviour on a per shader basis by adding the <b>MOJO</b> define to the effect processor by: 
+
+- using the MGCB editor UI: Effect Properties -> Processor Parameters -> Defines
+- adding <b>/processorParam:Defines=MOJO</b> to the mgcb file in the corresponding effect block
+- adding the <b>/Defines:MOJO</b> argument when calling MGFXC directly via command line
+
+So you can mix MojoShader and ShaderConductor shaders in the same project, only ShaderConductor can handle shader model 4 or 5 though.
+<br>
+
+In order to compile using ShaderConductor the following modifications to the HLSL source are neccessary, mainly because the new HLSL compiler from Microsoft (DXC) does not support the old DX9-style syntax anymore. 
 
 ## SV prefix for shader semantics
 Pixel shaders in MojoShader used the COLOR and DEPTH output semantic, now it's SV_POSITION and SV_DEPTH.
@@ -52,7 +61,7 @@ Note the three things that changed:
 - **tex2D()** becomes **MyTexture.Sample()**, same for **tex1D()**, **tex3D()** and **texCUBE()**. There are also DX10 equivalents for the more specialized texture sampling functions like **tex2Dlod()** which becomes **MyTexture.SampleLevel(MySampler, TexCoord, Level)**. More details about the available sampling functions can be found [here](https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-to-type).
 
 ## Binding textures and samplers by register
-The preferred method should generally be to bind by name whenever possible. With MojoShader there were cases where textures wouldn't get an effect parameter, so binding by register was the only option. This should not be the case anymore. You should always be able to bind textures like this.
+The preferred method should generally be to bind by name whenever possible. MojoShader messes up the names for texture effect parameters, this is not the case anymore with ShaderConductor. You should always be able to bind textures like this.
 ```C#
 // in HLSL
 Texture2D MyTexture;
