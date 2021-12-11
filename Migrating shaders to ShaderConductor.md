@@ -14,7 +14,7 @@ So you can mix MojoShader and ShaderConductor shaders in the same project, only 
 In order to compile using ShaderConductor the following modifications to the HLSL source are neccessary, mainly because the new HLSL compiler from Microsoft (DXC) does not support the old DX9-style syntax anymore. 
 
 ## SV prefix for shader semantics
-Pixel shaders in MojoShader used the COLOR and DEPTH output semantic, now it's SV_POSITION and SV_DEPTH.
+Pixel shaders in MojoShader used the COLOR and DEPTH output semantic, now it's SV_TARGET and SV_DEPTH.
 In order to pass vertex positions from the vertex to the pixel shader, the POSITION semantic was used in the past, this needs to be SV_POSITION now.
 ```HLSL
 float4 MyVertexShader(float4 inputPos: POSITION) : SV_POSITION
