@@ -83,11 +83,7 @@ Executing a compute shader works very similar to drawing primitives.<br>
 When drawing primitives you would call ```pass.Apply``` followed by ```GraphicsDevice.Draw...```.<br>
 For executing a compute shader you call ```pass.ApplyCompute``` followed by ```GraphicsDevice.DispatchCompute```.
 
-The StructuredBuffer gets bound to the compute shader by assigning it to the corresponding effect parameter, just like other shader parameters.
-
 ```C#
-effect.Parameters["Particles"].SetValue(particleBuffer);
-
 foreach (var pass in effect.CurrentTechnique.Passes)
 {
    pass.ApplyCompute();
