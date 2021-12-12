@@ -26,8 +26,8 @@ Here is a list of MonoGame packages which already have corresponding compute pac
 You can switch packages by right clicking a project in Visual Studio, then select <b>Manage NuGet Packages</b>, or by editing the csproj file in a text editor:
 ```XML
 <ItemGroup>
-  <PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="1.0.0" />
-  <PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="1.0.0" />
+  <PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.1.1" />
+  <PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.1" />
 </ItemGroup>
 ```
 <br>
