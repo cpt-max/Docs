@@ -93,8 +93,11 @@ On another Ubuntu machine the registration always failed. Fortunately the regist
 
 
 ### Templates 
-No new templates have been created for compute, but since you only need to swap the NuGet packages, the old templates should work just fine. 
-<br><br>
+No new templates have been created for compute, but since you only need to swap the NuGet packages, the old templates should work just fine. For Windows you may need to update the target framework to .Net 5+ in the csproj file:
+```XML
+<TargetFramework>.net5.0-windows</TargetFramework>
+```
+<br>
 
 
 ### Wine for effect compilation on Linux and Mac
