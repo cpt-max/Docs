@@ -2,12 +2,11 @@
 The [custom compute fork](https://github.com/cpt-max/MonoGame) is based on the current (as of this writing) development branch of MonoGame.<br>
 You have the same options of target frameworks to choose from for your project:
 - .Net Framework (4.52 or higher for WindowsDX, minimum for OpenGL?)
-- .Net Core (minimum version?)
+- .Net Core (DesktopGL only: netcoreapp3.1)
 - .Net 5
 - .Net 6
 
-Outside of the [migrations needed for custom OpenGL shaders](https://github.com/cpt-max/Docs/blob/master/Migrating%20shaders%20to%20ShaderConductor.md),
-there shouldn't be any breaking changes compared to the stable 3.8 release.
+Outside of the [migrations needed for custom OpenGL shaders](https://github.com/cpt-max/Docs/blob/master/Migrating%20shaders%20to%20ShaderConductor.md) and the switch from .Net Core to .Net 5 for WindowsDX, there shouldn't be any breaking changes compared to the stable 3.8 release.
 You can switch an existing project over by swapping the MonoGame package references in your project with the corresponding compute packages.
 <br><br>
 If you are already building MonoGame from source, there's nothing special, just switch (or merge) to the compute fork, and don't foget that you have to use the updated content builder (MGCB and MGFXC) for compiling your content.
@@ -79,6 +78,7 @@ To launch it from the command line:
 ```
 mgcb-editor-compute
 ```
+You can also find/launch it by navigating to the default installation folder for .Net tools on your OS. 
 To register it:
 ```
 mgcb-editor-compute --register
