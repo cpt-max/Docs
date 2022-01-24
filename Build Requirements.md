@@ -20,13 +20,13 @@ Here is a list of MonoGame packages which already have corresponding compute pac
 - MonoGame.Framework.WindowsDX -> MonoGame.Framework.Compute.WindowsDX
 - MonoGame.Framework.DesktopGL -> MonoGame.Framework.Compute.DesktopGL
 - MonoGame.Content.Builder.Task -> MonoGame.Content.Builder.Task.Compute
-- dotnet-mgcb-editor -> dotnet-mgcb-editor-compute
+- dotnet-mgcb-editor -> dotnet-mgcb-editor-compute   (Windows and Linux only, a Mac version exists as a direct download)
 
 You can switch packages by right clicking a project in Visual Studio, then select <b>Manage NuGet Packages</b>, or by editing the csproj file in a text editor:
 ```XML
 <ItemGroup>
-  <PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.1.1" />
-  <PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.1" />
+  <PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.1.2" />
+  <PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.1.2" />
 </ItemGroup>
 ```
 <br>
@@ -44,10 +44,9 @@ Supported through DesktopGL (only tested on Ubuntu 20.04)
 <br>
 
 <b>- Mac</b><br>
-All the unit tests are passed on Mac, so you can technically use it, but it fails to create anything higher than an OpenGL 2.1 context.
-This limits you to shader model 2 and 3. The new shader stages require shader model 4 and 5<br>
-The issue can probably be resolved pretty easily as described [here](https://stackoverflow.com/questions/19658745/why-is-my-opengl-version-always-2-1-on-mac-os-x), 
-but this has not yet been investigated any further. Also this won't make compute shaders work, as MacOS only supports OpenGL 4.1, while compute was added with 4.3.
+Supported through DesktopGL, however the OpenGL version is currently limited to 2.1. This limits you to shader model 2 and 3. 
+The main reason for using this fork is to get shader model 4 and 5 support, rendering the Mac version almost useless in it's current state.<br>
+A higher OpenGL version (4.1) can easily be created by switching from the legacy to a core OpenGL context, but this causes follow-up problems that still need to be resolved.
 <br>
 
 <b>- Android and iOS</b><br>
@@ -68,8 +67,8 @@ with the following modifications:
 <br><br>
 
 
-### MGCB Editor
-The modified MGCB editor is called dotnet-mgcb-editor-compute instead of dotnet-mgcb-editor. Install it like this
+### MGCB Editor for Windows and Linux
+The modified MGCB editor is called dotnet-mgcb-editor-compute instead of dotnet-mgcb-editor. This tool only works on Windows and Linux. For Mac there is a direct download, see below. You can install the tool like this:
 ```
 dotnet tool install --global dotnet-mgcb-editor-compute
 ```
@@ -89,6 +88,16 @@ On one Ubuntu machine an explicit unregister from the old editor was needed befo
 mgcb-editor --unregister
 ```
 On another Ubuntu machine the registration always failed. Fortunately the registration isn't that important.
+<br><br>
+
+
+### MGCB Editor for Mac
+On Mac the editor can be downloaded [here](https://www.dropbox.com/s/h4448bafzyul49m/MGCB-Editor.tgz?dl=1).
+You need to have .Net 5 installed. On M1 that means installing the x64 runtime, as there is no .Net 5 SDK for Arm. 
+This is not a signed app, so on newer OSX versions you need to remove the quarantine attribute after extracting, otherwise it won't launch and you get a message that the app is damaged.
+```
+xattr -d com.apple.quarantine /PathTo/MGCB-Editor.app 
+``` 
 <br><br>
 
 
