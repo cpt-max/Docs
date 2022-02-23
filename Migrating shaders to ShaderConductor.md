@@ -105,3 +105,13 @@ Updating a shader array via effect parameters only works for vs_4_0 and ps_4_0 o
 
 ## Non square matrices are not supported with shader model 2 and 3
 
+## Modulo operator is not supported with shader model 2 and 3
+You need to replace modulo with something like this:
+```HLSL
+float Modulo(float x, float m) 
+{
+    return x - floor(x/m) * m;
+}
+```
+If you need specific behaviour for negative numbers it might get more complicated than this. 
+
