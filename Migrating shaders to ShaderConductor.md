@@ -44,7 +44,7 @@ float4 MyPixelShader(VertexOut input) : COLOR
 The equivalent DX10 code will work with ShaderConductor.   
 ```HLSL
 Texure2D MyTexture;
-SamplerState MySampler;
+sampler MySampler;
 
 float4 MyPixelShader(VertexOut input) : SV_TARGET
 {
