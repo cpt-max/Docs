@@ -6,7 +6,7 @@ You don't neccessarily have to migrate existing shaders, as MojoShader is still 
 You can mix MojoShader and ShaderConductor shaders in the same project, only ShaderConductor can handle shader model 4 or 5 though.
 <br>
 
-The moment a single shader in the file is set to shader model 4 or higher, the entire file will be compiled through ShaderConductor. So if you mix SM 3 and SM 4 shaders in the same file, even the SM 3 shaders will be compiled through ShaderConductor. For this reason it is recommended to switch all shaders in the file to SM 4 or higher simultaneously, because SM 2 and 3 support is not that great with ShaderConductor (see SM 2 and 3 limitations below). 
+The moment a single shader in the file is set to shader model 4 or higher, the entire file will be compiled through ShaderConductor. So if you mix SM 3 and SM 4 shaders in the same file, even the SM 3 shaders will be compiled through ShaderConductor. It is recommended to switch all shaders in the file to SM 4 or higher simultaneously, because SM 2 and 3 support is not that great with ShaderConductor (see SM 2 and 3 limitations below). 
 <br>
 
 ShaderConductor compilation does not require Wine on Linux or Mac, so forcing ShaderConductor compilation for pure SM 2 and 3 files can still be useful.
