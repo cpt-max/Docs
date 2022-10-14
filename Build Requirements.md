@@ -1,15 +1,16 @@
 # Using the MonoGame Compute Fork in your own Projects
-The [custom compute fork](https://github.com/cpt-max/MonoGame) is based on the current (as of this writing) development branch of MonoGame.<br>
-You have the same options of target frameworks to choose from for your project:
-- .Net Framework (4.52 or higher for WindowsDX, minimum for OpenGL?)
-- .Net Core (DesktopGL only: netcoreapp3.1)
-- .Net 5
-- .Net 6
-
-Outside of the [migrations needed for custom OpenGL shaders](https://github.com/cpt-max/Docs/blob/master/Migrating%20shaders%20to%20ShaderConductor.md) and the switch from .Net Core to .Net 5 for WindowsDX, there shouldn't be any breaking changes compared to the stable 3.8 release.
+The [custom compute fork](https://github.com/cpt-max/MonoGame) is based on the current (3.8.1) development branch of MonoGame.<br>
 You can switch an existing project over by swapping the MonoGame package references in your project with the corresponding compute packages.
 <br><br>
 If you are already building MonoGame from source, there's nothing special, just switch (or merge) to the compute fork, and don't foget that you have to use the updated content builder (MGCB and MGFXC) for compiling your content.
+<br><br>
+You get the updated content builder automatically through Nugets if you have a proper [dotnet-tools.json](https://github.com/cpt-max/MonoGame-Shader-Samples/blob/overview/.config/dotnet-tools.json) file in your projects .config folder, as well as a tool restore section in your csproj file
+```xml
+  <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
+    <Message Text="Restoring dotnet tools" Importance="High" />
+    <Exec Command="dotnet tool restore" />
+  </Target>
+```
 <br><br>
 
 
@@ -19,14 +20,23 @@ NuGet packages for the MonoGame compute fork are available on nuget.org.<br>
 Here is a list of MonoGame packages which already have corresponding compute packages:
 - MonoGame.Framework.WindowsDX -> MonoGame.Framework.Compute.WindowsDX
 - MonoGame.Framework.DesktopGL -> MonoGame.Framework.Compute.DesktopGL
+- MonoGame.Framework.Android -> MonoGame.Framework.Compute.Android
 - MonoGame.Content.Builder.Task -> MonoGame.Content.Builder.Task.Compute
-- dotnet-mgcb-editor -> dotnet-mgcb-editor-compute   (Windows and Linux only, a Mac version exists as a direct download)
+<br>
+
+These are the MGCB editor related Nugets, which should get downloaded automatically, if you set up tool restore as described above:
+- dotnet-mgcb -> dotnet-mgcb-compute
+- dotnet-mgcb-editor -> dotnet-mgcb-editor-compute
+- dotnet-mgcb-editor-linux -> dotnet-mgcb-editor-compute-linux
+- dotnet-mgcb-editor-windows -> dotnet-mgcb-editor-compute-windows
+- dotnet-mgcb-editor-compute -> dotnet-mgcb-editor-compute-mac
+<br>
 
 You can switch packages by right clicking a project in Visual Studio, then select <b>Manage NuGet Packages</b>, or by editing the csproj file in a text editor:
 ```XML
 <ItemGroup>
-  <PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.1.2" />
-  <PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.1.2" />
+  <PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.2.0" />
+  <PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.2.0" />
 </ItemGroup>
 ```
 <br>
@@ -43,17 +53,21 @@ Supported through WindowsDX and DesktopGL
 Supported through DesktopGL (only tested on Ubuntu 20.04)
 <br>
 
+<b>- Android</b><br>
+Supported through Android
+<br>
+
 <b>- Mac</b><br>
 Supported through DesktopGL, however the OpenGL version is currently limited to 2.1. This limits you to shader model 2 and 3. 
 The main reason for using this fork is to get shader model 4 and 5 support, rendering the Mac version almost useless in it's current state.<br>
-A higher OpenGL version (4.1) can easily be created by switching from the legacy to a core OpenGL context, but this causes follow-up problems that still need to be resolved.
+A higher OpenGL version (4.1) can be created by switching from the legacy to a core OpenGL context, but this causes follow-up problems that still need to be resolved.<br>
+Compute shaders won't be available through OpenGL at all, since MacOS doesn't support OpenGL 4.3.
 <br>
 
-<b>- Android and iOS</b><br>
-Both Android and iOS have been tested successfully with a simple test shader, compiled through ShaderConductor.<br>
-This was before compute shaders were added, no testing happened since then.<br>
-There is no reason why compute shaders shouldn't work on Android, it needs to be tested though.<br>
-On iOS compute shaders are not available through OpenGL at all.
+<b>- iOS</b><br>
+iOS has been tested successfully with a simple test shader, compiled through ShaderConductor.<br>
+This was before compute shaders were added, no testing happened since then. There is no published Nuget for iOS yet.<br>
+Compute shaders for iOS won't be available through OpenGL at all, since iOS doesn't support OpenGL 4.3.
 <br><br>
 
 
@@ -67,48 +81,17 @@ with the following modifications:
 <br><br>
 
 
-### MGCB Editor for Windows and Linux
-The modified MGCB editor is called dotnet-mgcb-editor-compute instead of dotnet-mgcb-editor. This tool only works on Windows and Linux. For Mac there is a direct download, see below. You can install the tool like this:
-```
-dotnet tool install --global dotnet-mgcb-editor-compute
-```
-The two editor versions can coexist happily on the same machine.<br>
-To launch it from the command line:
-```
-mgcb-editor-compute
-```
-You can also find/launch it by navigating to the default installation folder for .Net tools on your OS. 
-To register it:
-```
-mgcb-editor-compute --register
-```
-This will override a previous registration from the non-compute editor.
-On one Ubuntu machine an explicit unregister from the old editor was needed before the new one could be registerd
-```
-mgcb-editor --unregister
-```
-On another Ubuntu machine the registration always failed. Fortunately the registration isn't that important.
+### MGCB Editor
+The modified MGCB editor got a name change. As you can see with the MGCB editor Nugets "compute" has been added to each of there names. The same applies to command line commands. E.g. if you typed ```mgcb-editor``` before, you have to type ```mgcb-editor-compute``` now.
 <br><br>
 
-
-### MGCB Editor for Mac
-On Mac the editor can be downloaded [here](https://www.dropbox.com/s/h4448bafzyul49m/MGCB-Editor.tgz?dl=1).
-You need to have .Net 5 installed. On M1 that means installing the x64 runtime, as there is no .Net 5 SDK for Arm. 
-This is not a signed app, so on newer OSX versions you need to remove the quarantine attribute after extracting, otherwise it won't launch and you get a message that the app is damaged.
-```
-xattr -d com.apple.quarantine /PathTo/MGCB-Editor.app 
-``` 
-<br><br>
 
 
 ### Templates 
-No new templates have been created for compute, but since you only need to swap the NuGet packages, the old templates should work just fine. For Windows you may need to update the target framework to .Net 5+ in the csproj file:
-```XML
-<TargetFramework>.net5.0-windows</TargetFramework>
-```
-<br>
+No new templates have been created for compute, but since you only need to swap the NuGet packages, the existing templates should work just fine. 
+<br><br>
 
 
 ### Wine for effect compilation on Linux and Mac
-This is not needed anymore, as ShaderConductor is platform independent. If you still want to compile shaders using MojoShader as well, you will still need it though.
+As long as ShaderConductor is used for compiling shaders Wine is not needed anymore, as ShaderConductor is platform independent. Shaders compiled through MojoShader will still need Wine though. A shader file is compiled through ShaderConductor if any of the shaders in the file uses shader model 4 or higher. If all shaders in the file are shader model 2 or 3, you can still force ShaderConductor by adding a CONDUCTOR define.
 <br><br>
