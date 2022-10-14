@@ -93,5 +93,5 @@ No new templates have been created for compute, but since you only need to swap 
 
 
 ### Wine for effect compilation on Linux and Mac
-As long as ShaderConductor is used for compiling shaders Wine is not needed anymore, as ShaderConductor is platform independent. Shaders compiled through MojoShader will still need Wine though. A shader file is compiled through ShaderConductor if any of the shaders in the file uses shader model 4 or higher. If all shaders in the file are shader model 2 or 3, you can still force ShaderConductor by adding a CONDUCTOR define.
+As long as ShaderConductor is used for compiling shaders Wine is not needed anymore, as ShaderConductor is platform independent. Shaders compiled through MojoShader will still need Wine though. A shader file is compiled through ShaderConductor if any of the shaders in the file uses shader model 4 or higher. If all shaders in the file are shader model 2 or 3, you can still force ShaderConductor by adding a CONDUCTOR define. Have a look at the [Migration Guide](https://github.com/cpt-max/Docs/blob/master/Migrating%20shaders%20to%20ShaderConductor.md) for more details.
 <br><br>
