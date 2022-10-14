@@ -1,14 +1,20 @@
 
 # Migrating Shaders from MojoShader to ShaderConductor
 
-This only applies to OpenGL platforms.
-The good news is, you don't neccessarily have to migrate existing shaders, as MojoShader is still included. ShaderConductor will be used by default for shader compilation, but you can override this behaviour on a per shader basis by adding the <b>MOJO</b> define to the effect processor by: 
+This only applies to OpenGL platforms.<br>
+You don't neccessarily have to migrate existing shaders, as MojoShader is still included. If all shaders in a file are shader model 2 or 3 MojoShader will automatically be used for shader compilation. This should ensure full backwards compatibility for existing projects.
+You can mix MojoShader and ShaderConductor shaders in the same project, only ShaderConductor can handle shader model 4 or 5 though.
+<br>
+
+The moment a single shader in the file is set to shader model 4 or higher, the entire file will be compiled through ShaderConductor. So if you mix SM 3 and SM 4 shaders in the same file, even the SM 3 shaders will be compiled through ShaderConductor. For this reason it is recommended to switch all shaders in the file to SM 4 or higher simultaneously, because SM 2 and 3 support is not that great with ShaderConductor (see SM 2 and 3 limitations below). 
+<br>
+
+ShaderConductor compilation does not require Wine on Linux or Mac, so forcing ShaderConductor compilation for pure SM 2 and 3 files can still be useful.
+You can force ShaderConductor compilation by adding the <b>CONDUCTOR</b> define to the effect processor by: 
 
 - using the MGCB editor UI: Effect Properties -> Processor Parameters -> Defines
 - adding <b>/processorParam:Defines=MOJO</b> to the mgcb file in the corresponding effect block
 - adding the <b>/Defines:MOJO</b> argument when calling MGFXC directly via command line
-
-So you can mix MojoShader and ShaderConductor shaders in the same project, only ShaderConductor can handle shader model 4 or 5 though.
 <br>
 
 In order to compile using ShaderConductor the following modifications to the HLSL source are neccessary, mainly because the new HLSL compiler from Microsoft (DXC) does not support the old DX9-style syntax anymore. 
@@ -48,7 +54,7 @@ float4 MyPixelShader(VertexOut input) : COLOR
 The equivalent DX10 code will work with ShaderConductor.   
 ```HLSL
 Texure2D MyTexture;
-sampler MySampler;
+SamplerState MySampler;
 
 float4 MyPixelShader(VertexOut input) : SV_TARGET
 {
@@ -74,7 +80,7 @@ effect.Parameters["MyTexture"].SetValue(myTexture);
 Unfortunately there are no effect parameters for samplers currently. If you want to assign a sampler state in C#, you have to bind by register. You should never rely on automatic register assignment in this case, even if there is only a single sampler in your shader. If you want to guarantee your sampler is bound to a specific register, you need to specify the register explicitly in HLSL.
 ```HLSL
 // in HLSL
-sampler MySampler : register(s0);
+SamplerState MySampler : register(s0);
 
 // in C#
 GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
