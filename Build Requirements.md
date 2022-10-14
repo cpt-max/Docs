@@ -82,7 +82,9 @@ with the following modifications:
 
 
 ### MGCB Editor
-The modified MGCB editor got a name change. As you can see with the MGCB editor Nugets "compute" has been added to each of there names. The same applies to command line commands. E.g. if you typed ```mgcb-editor``` before, you have to type ```mgcb-editor-compute``` now.
+The modified MGCB editor Nugets all got "compute" added to their names. The same applies when you use them on the command line.<br>
+From the projects directroy you can type ```dotnet mgcb-editor-compute``` in order to launch the MGCB editor.<br>
+```dotnet tool install -g dotnet-mgcb-compute``` will install MGCB as a global tool, which can then be used to build content using the ```mgcb-compute``` command.
 <br><br>
 
 
