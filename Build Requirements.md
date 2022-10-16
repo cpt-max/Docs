@@ -1,7 +1,14 @@
 # Using the MonoGame Compute Fork in your own Projects
 The [custom compute fork](https://github.com/cpt-max/MonoGame) is based on the current (3.8.1) development branch of MonoGame.<br>
 You can switch an existing project over by swapping the MonoGame package references in your project with the corresponding compute packages.
-<br><br>
+You can switch packages by right clicking a project in Visual Studio, then select <b>Manage NuGet Packages</b>, or by editing the csproj file in a text editor:
+```XML
+<ItemGroup>
+  <PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.2.0" />
+  <PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.2.0" />
+</ItemGroup>
+```
+
 If you are already building MonoGame from source, there's nothing special, just switch (or merge) to the compute fork, and don't foget that you have to use the updated content builder (MGCB and MGFXC) for compiling your content.
 <br><br>
 You get the updated content builder automatically through Nugets if you have a proper [dotnet-tools.json](https://github.com/cpt-max/MonoGame-Shader-Samples/blob/overview/.config/dotnet-tools.json) file in your projects .config folder, as well as a tool restore section in your csproj file
@@ -12,7 +19,6 @@ You get the updated content builder automatically through Nugets if you have a p
   </Target>
 ```
 <br><br>
-
 
 
 ## NuGet Packages
@@ -31,17 +37,6 @@ These are the MGCB editor related Nugets, which should get downloaded automatica
 - dotnet-mgcb-editor-windows -> dotnet-mgcb-editor-compute-windows
 - dotnet-mgcb-editor-compute -> dotnet-mgcb-editor-compute-mac
 <br>
-
-You can switch packages by right clicking a project in Visual Studio, then select <b>Manage NuGet Packages</b>, or by editing the csproj file in a text editor:
-```XML
-<ItemGroup>
-  <PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.2.0" />
-  <PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.2.0" />
-</ItemGroup>
-```
-<br>
-
-
 
 ## Platform Support
 
@@ -70,8 +65,6 @@ This was before compute shaders were added, no testing happened since then. Ther
 Compute shaders for iOS won't be available through OpenGL at all, since iOS doesn't support OpenGL 4.3.
 <br><br>
 
-
-
 ## Setting up your development environment
 The official setup guide still applies 
 ([windows](https://docs.monogame.net/articles/getting_started/1_setting_up_your_development_environment_windows.html), 
@@ -86,7 +79,6 @@ The modified MGCB editor Nugets all got "compute" added to their names. The same
 From the projects directroy you can type ```dotnet mgcb-editor-compute``` in order to launch the MGCB editor.<br>
 ```dotnet tool install -g dotnet-mgcb-compute``` will install MGCB as a global tool, which can then be used to build content using the ```mgcb-compute``` command.
 <br><br>
-
 
 
 ### Templates 
