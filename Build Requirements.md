@@ -11,15 +11,14 @@ You can switch packages by right clicking a project in Visual Studio, then selec
 
 If you are already building MonoGame from source, there's nothing special, just switch (or merge) to the compute fork, and don't foget that you have to use the updated content builder (MGCB and MGFXC) for compiling your content.
 <br><br>
-You get the updated content builder automatically through Nugets if you have a proper [dotnet-tools.json](https://github.com/cpt-max/MonoGame-Shader-Samples/blob/overview/.config/dotnet-tools.json) file in your projects .config folder, as well as a tool restore section in your csproj file
+You get the updated content builder automatically through Nugets if you have a proper [dotnet-tools.json](https://github.com/cpt-max/MonoGame-Shader-Samples/blob/overview/.config/dotnet-tools.json) file in your projects .config folder, as well as a tool restore section in your [.csproj file](https://github.com/cpt-max/MonoGame-Shader-Samples/blob/overview/ShaderSampleGL.csproj).
 ```xml
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />
     <Exec Command="dotnet tool restore" />
   </Target>
 ```
-<br><br>
-
+<br>
 
 ## NuGet Packages
 NuGet packages for the MonoGame compute fork are available on nuget.org.<br>
