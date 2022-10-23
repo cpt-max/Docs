@@ -1,6 +1,6 @@
 # Shader models for OpenGL
 With MojoShader the available shader models for OpenGL platforms were vs_2_0, ps_2_0 and vs_3_0, ps_3_0. Those are still available in ShaderConductor, the target GLSL version is identical, in order to support the same hardware as MojoShader did.<br> 
-Additionally all the shader models currently available in DirectX can now also be used with OpenGL. The target OpenGL/GLSL versions are chosen automatically, trying to closely match feature levels between DirectX and OpenGL.<br>  
+Additionally, all the shader models currently available in DirectX can now also be used with OpenGL. The target OpenGL/GLSL versions are chosen automatically, trying to closely match feature levels between DirectX and OpenGL.<br>  
 If this default mapping is not satisfactory, conditional code can still be used. ESSL is available as an additional define when targeting mobile platforms (Android, iOS)
 ```HLSL
 #if ESSL
@@ -26,5 +26,5 @@ The following table shows how shader models are mapped to GLSL and OpenGL versio
 
 ### Shader stages
 - GS: Geometry shader
-- TESS: Tesselation shader (Hull and Domain)
+- TESS: Tessellation shader (Hull and Domain)
 - CS: Compute shader
