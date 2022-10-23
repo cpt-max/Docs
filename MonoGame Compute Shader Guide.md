@@ -69,19 +69,19 @@ technique Tech0
     }
 }
 ```
-A compute shader can be alone in a separate technique, but it can also be part of a teqchnique, that already contains a vertex or a pixel shader. 
-Just because the compute shader shares a technique with a vertex shader, does not mean it will automatically execute, whenever the vertex shader executes. 
-Compute shaders are differen in this regard from other shader stages. They are not tied into the normal shader pipeline, they always run separately.
+A compute shader can be alone in a separate technique, but it can also be part of a technique, that already contains a vertex or a pixel shader. 
+A compute shader sharing a technique with a vertex shader does not mean it will automatically execute whenever the vertex shader executes. 
+Compute shaders are different in this regard from other shader stages. They are not tied into the normal shader pipeline. They always run separately.
 
-There has to be at least one output buffer/texture (RWStructuredBuffer, RWByteAddressBuffer, RWTexture), but there could be multiple. The "RW" stands for read/write. In addition to that, there can be multiple readonly input buffers/textures (StructuredBuffer, ByteAddressBuffer, Texture). In the example above the RWStructuredBuffer provides both, the input and the output.
+There has to be at least one output buffer/texture (RWStructuredBuffer, RWByteAddressBuffer, RWTexture), but there could be multiple. The "RW" stands for read/write. In addition to that, there can be multiple readonly input buffers/textures (StructuredBuffer, ByteAddressBuffer, Texture). In the example above the RWStructuredBuffer provides both the input and the output.
 <br><br>
 
 
 ### 1.2 Execute Compute Shader <a name="execute-compute-shader"></a>
 
 Executing a compute shader works very similar to drawing primitives.<br>
-When drawing primitives you would call ```pass.Apply``` followed by ```GraphicsDevice.Draw...```.<br>
-For executing a compute shader you call ```pass.ApplyCompute``` followed by ```GraphicsDevice.DispatchCompute```.
+When drawing primitives, you would call ```pass.Apply``` followed by ```GraphicsDevice.Draw...```.<br>
+For executing a compute shader, you call ```pass.ApplyCompute``` followed by ```GraphicsDevice.DispatchCompute```.
 
 ```C#
 foreach (var pass in effect.CurrentTechnique.Passes)
@@ -112,7 +112,7 @@ This is a bad idea, as it might lead to frequent switches between regular drawin
 
 ## 2. Structured Buffers <a name="structured-buffers"></a>
 
-A structured buffer is basically a struct array, accessible to compute shaders. Since the struct fields are fully customizeable, they are very flexible.
+A structured buffer is basically a struct array, accessible to compute shaders. Since the struct fields are fully customizable, they are very flexible.
 
 A simple sample project involving a structured buffer can be found [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_gpu_particles).
 <br><br>
@@ -120,7 +120,7 @@ A simple sample project involving a structured buffer can be found [here](https:
 
 ### 2.1. Add Structured Buffer in HLSL <a name="structured-buffer-hlsl"></a>
 
-A structured buffer is created in HLSL using the StructuredBuffer (readonly) or RWStructuredBuffer (read/write) keyword.
+A structured buffer is created in HLSL using the StructuredBuffer (read only) or RWStructuredBuffer (read/write) keyword.
 
 ```HLSL
 #define GroupSize 64
@@ -193,7 +193,7 @@ particleBuffer.GetData(particles, 0, ParticleCount);
 ### 2.4 Consume Structured Buffer Data in other Shader Stage <a name="consume-in-other-stage"></a>
 
 You can't access an RWStructuredBuffer directly from non-compute stages, at least not in DirectX 11. 
-Instead you need to add a regular StructuredBuffer. This means a single HLSL file may contain two definitions for the same buffer. 
+You need to add a regular StructuredBuffer instead. This means a single HLSL file may contain two definitions for the same buffer. 
 
 ```HLSL
 StructuredBuffer<Particle> ParticlesReadOnly;
@@ -207,7 +207,7 @@ VertexOut VS(in VertexIn input)
 }
 ```
 
-While in DX you can read from a StructuredBuffer using shader model 4, in OpenGL you neeed to use shader model 5 (e.g. vs_5_0). 
+While in DX you can read from a StructuredBuffer using shader model 4, in OpenGL you need to use shader model 5 (e.g. vs_5_0). 
 <br><br>
 
 
@@ -230,18 +230,18 @@ void CS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
     Particles.Append(p);
 }
 ```
-Respectively you can use the ConsumeStructuredBuffer keyword, if you want to pop objects from the buffer using the Consume() function.
+Respectively, you can use the ConsumeStructuredBuffer keyword, if you want to pop objects from the buffer using the Consume() function.
 
-With counter buffers you get the IncrementCounter() and DecrementCounter() HLSL functions, which return the counter value before the increment/decrement happend. The returned counter value can then be used to index the buffer. Counter buffers don't require a special keyword, they are defined as a regular RWStructuredBuffer in HLSL. 
+With counter buffers, you get the IncrementCounter() and DecrementCounter() HLSL functions, which return the counter value before the increment/decrement happened. The returned counter value can then be used to index the buffer. Counter buffers don't require a special keyword, they are defined as a regular RWStructuredBuffer in HLSL. 
 
 In C# you turn a structured buffer into an append or counter buffer by supplying the optional constructor parameters at the end:
 ```C#
 particleBuffer = new StructuredBuffer(GraphicsDevice, typeof(Particle), ParticleCount, BufferUsage.None, ShaderAccess.ReadWrite, StructuredBufferType.Append, 0);
 ```
 StructuredBufferType.Append will create an append buffer, StructuredBufferType.Counter will create a counter buffer. 
-The last parameter is the reset count. Whenever a compute dispatch happens invloving this buffer, the internal counter will be reset to the specified value. If you do not wish to reset the counter, use a value of -1. A new reset count can be assigned any time via StructuredBuffer.CounterResetValue.
+The last parameter is the reset count. Whenever a compute dispatch happens involving this buffer, the internal counter will be reset to the specified value. If you do not wish to reset the counter, use a value of -1. A new reset count can be assigned any time via StructuredBuffer.CounterResetValue.
 
-Using the CopyCounterValue() function the internal counter can be copied into another buffer at the specified byte offset. This can be useful for setting the instance count in an indirect draw buffer for example (see indirect drawing):
+Using the CopyCounterValue() function, the internal counter can be copied into another buffer at the specified byte offset. This can be useful for setting the instance count in an indirect draw buffer (see indirect drawing):
 ```C#
 particleBuffer.CopyCounterValue(indirectDrawBuffer, DrawInstancedArguments.ByteOffsetInstanceCount);
  ```
@@ -253,7 +253,7 @@ particleBuffer.CopyCounterValue(indirectDrawBuffer, DrawInstancedArguments.ByteO
 ## 3. Textures <a name="textures"></a>
 
 A sample project demonstrating writing to textures can be found [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_write_to_texture).<br>
-For 3D textures there's another sample [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_write_to_3d_texture).
+There's another sample [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/compute_write_to_3d_texture) for 3D textures.
 <br><br>
 
 
@@ -310,7 +310,7 @@ A sample project demonstrating writing to vertex and index buffers can be found 
 
 ### 4.1. Add Vertex and Index Buffers in HLSL <a name="vertex-index-hlsl"></a>
     
-In order to access a vertex buffer from a compute shader a ByteAddressBuffer (readonly) or RWByteAddressBuffer (writeable) needs to be defined: 
+In order to access a vertex buffer from a compute shader a ByteAddressBuffer (read only) or RWByteAddressBuffer (writable) needs to be defined: 
 ```HLSL
 #define GroupSizeXY 64
 
@@ -333,7 +333,7 @@ void CS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
     Vertices.Store3(normByteInd, asuint(norm));
 }
 ```
-The Load, Load2, Load3 and Load4 functions return uint's, and the corresponding Store functions expect uint's, that's why the asfloat/asuint conversions are neccessary.
+The Load, Load2, Load3 and Load4 functions return uint's, and the corresponding Store functions expect uint's, that's why the asfloat/asuint conversions are necessary.
 
 A similar compute shader for index buffer access could look like this:
 ```HLSL
@@ -384,12 +384,12 @@ foreach (var pass in effect.CurrentTechnique.Passes)
 
 ## 5. Indirect Drawing <a name="indirect-drawing"></a>
 
-When objects are beeing processed in a compute shader, the CPU sometimes doesn't know how many objects need to be drawn, especially when the compute shader is responsible for spawn and destroy. Possible ways to deal with situations like these could be:
+When objects are being processed in a compute shader, the CPU sometimes doesn't know how many objects need to be drawn, especially when the compute shader is responsible for spawn and destroy. Possible ways to deal with situations like these could be:
 
-- always draw the maximum number of objects possible, making sure unused objects are not visible in the end. Disadvantage: Drawing more objects than needed and complicating  shaders, as they need to discard unused objects (e.g. collapsing vertices into a single point)
-- write the number of active objects into a buffer in a compute shader, then download that data to the CPU for drawing. Disadvantage: GPU and CPU are forced to synchronize, which can be very bad for performance.
+- Always draw the maximum number of objects possible, making sure unused objects are not visible in the end. Disadvantage: Drawing more objects than needed and complicating  shaders, as they need to discard unused objects (e.g. collapsing vertices into a single point)
+- Write the number of active objects into a buffer in a compute shader, then download that data to the CPU for drawing. Disadvantage: GPU and CPU are forced to synchronize, which can be very bad for performance.
 
-With indirect draw a 3rd option becomes available. Like with option 2 the total number of active objects is written into a buffer from a compute shader, but that data never gets downloaded to the CPU. When it's time to draw, instead of passing the number of objects directly to the draw call, the buffer containing the instance count is passed.
+With indirect draw, a 3rd option becomes available. Like with option 2 the total number of active objects is written into a buffer from a compute shader, but that data never gets downloaded to the CPU. When it's time to draw, instead of passing the number of objects directly to the draw call, the buffer containing the instance count is passed.
 
 A simple sample project demonstrating indirect draw can be found [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/object_culling_indirect_draw).
 A more complex indirect draw sample can be found [here](https://github.com/cpt-max/MonoGame-Shader-Samples/tree/indirect_draw_instances).
@@ -430,9 +430,9 @@ The indirect draw buffer is created just like other buffer types:
 ```C#
 indirectDrawBuffer = new IndirectDrawBuffer(GraphicsDevice, BufferUsage.None, ShaderAccess.ReadWrite);
 ```
-By default the indirect draw buffer will have space for 5 unsigned integers, which is enough for all of the 3 possible indirect draw/dispatch calls. You can also provide the number of uint's in the buffer as the last parameter. That way you can fit multiple draw calls into the same buffer, or have space for some extra variables.
+By default, the indirect draw buffer will have space for 5 unsigned integers, which is enough for all of the 3 possible indirect draw/dispatch calls. You can also provide the number of uint's in the buffer as the last parameter. That way you can fit multiple draw calls into the same buffer, or have space for some extra variables.
 
-You probably want to initialize the indirect draw buffer on the CPU. Usually not all draw parameters need to be dynamic, very often only the instance count is. Also you may need to reset the instance count in the buffer to zero every frame, so the compute shader can then increment it by one for every active instance.
+You probably want to initialize the indirect draw buffer on the CPU. Usually not all draw parameters need to be dynamic, very often only the instance count is. Also, you may need to reset the instance count in the buffer to zero every frame, so the compute shader can then increment it by one for every active instance.
 ```C#
 indirectDrawBuffer.SetData(new DrawIndexedInstancedArguments
 {
@@ -443,7 +443,7 @@ indirectDrawBuffer.SetData(new DrawIndexedInstancedArguments
     StartInstanceLocation = 0,
 });
 ```
-For every draw/dispatch call variant (DrawIndexedInstanced, DrawInstanced and DispatchCompute), there's a SetData variant taking the respective argument struct as a parameter (DrawIndexedInstancedArguments, DrawInstancedArguments and DispatchComputeArguments). Alternatively you can also set the data using an array of uint's, just like with other buffer types. 
+For every draw/dispatch call variant (DrawIndexedInstanced, DrawInstanced and DispatchCompute), there's a SetData variant taking the respective argument struct as a parameter (DrawIndexedInstancedArguments, DrawInstancedArguments and DispatchComputeArguments). Alternatively, you can also set the data using an array of uint's, just like with other buffer types. 
 
 Sometimes you want to fit multiple draw or dispatch calls into a single indirect draw buffer. You can use the following pattern to initialize the buffer:
 ```C#
@@ -477,7 +477,7 @@ buffer.SetData(data);
 
 ### 5.3. Draw and Dispatch using Indirect Draw Buffer  <a name="draw-indirect-draw"></a>
 
-In order to draw objects indirectly you use one of the two indirect draw calls DrawIndexedInstancedPrimitivesIndirect or DrawInstancedPrimitivesIndirect
+In order to draw objects indirectly, you use one of the two indirect draw calls DrawIndexedInstancedPrimitivesIndirect or DrawInstancedPrimitivesIndirect
 ```C#
 GraphicsDevice.SetVertexBuffer(vertexBuffer);
 GraphicsDevice.Indices = indexBuffer;
@@ -502,7 +502,7 @@ foreach (var pass in effect.CurrentTechnique.Passes)
 
 ## 6. Limitations <a name="limitations"></a>
 
-- When you call GetData() on a structured buffer, where the corresponding struct contains a bool parameters, you will currently get an exception, telling you that bool is not a blittable type. Just use int instead.
 - Writing to cubemaps, texture arrays, or into specific texture mipmap levels is currently not possible. However, you can use the new CopyData() functions for textures as a workaround. Write to a regular texture and then copy the data into cubemap faces, mipmap levels, or array slices. Since the copying happens on the GPU, it's relatively efficient.
+- When you call GetData() on a structured buffer, where the corresponding struct contains a bool parameter, you will get an exception, telling you that bool is not a blittable type. Just use int instead.
 
 <br><br><br>
