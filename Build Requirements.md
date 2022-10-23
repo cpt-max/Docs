@@ -1,7 +1,7 @@
 # Using the MonoGame Compute Fork in your own Projects
 The [custom compute fork](https://github.com/cpt-max/MonoGame) is based on the current (3.8.1) development branch of MonoGame.<br>
 You can switch an existing project over by swapping the MonoGame package references in your project with the corresponding compute packages.
-You can switch packages by right clicking a project in Visual Studio, then select <b>Manage NuGet Packages</b>, or by editing the csproj file in a text editor:
+You can switch packages by right-clicking a project in Visual Studio, then select <b>Manage NuGet Packages</b>, or by editing the csproj file in a text editor:
 ```XML
 <ItemGroup>
   <PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.2.0" />
@@ -9,7 +9,8 @@ You can switch packages by right clicking a project in Visual Studio, then selec
 </ItemGroup>
 ```
 
-If you are already building MonoGame from source, there's nothing special, just switch (or merge) to the compute fork, and don't foget that you have to use the updated content builder (MGCB and MGFXC) for compiling your content.
+If you are already building MonoGame from source, there's nothing special, just switch (or merge) to the compute fork.<br>
+Don't forget that you have to use the updated content builder (MGCB and MGFXC) for compiling your content.
 <br><br>
 You get the updated content builder automatically through Nugets if you have a proper [dotnet-tools.json](https://github.com/cpt-max/MonoGame-Shader-Samples/blob/overview/.config/dotnet-tools.json) file in your projects .config folder, as well as a tool restore section in your [.csproj file](https://github.com/cpt-max/MonoGame-Shader-Samples/blob/overview/ShaderSampleGL.csproj).
 ```xml
@@ -52,8 +53,8 @@ Supported through Android
 <br>
 
 <b>- Mac</b><br>
-Supported through DesktopGL, however the OpenGL version is currently limited to 2.1. This limits you to shader model 2 and 3. 
-The main reason for using this fork is to get shader model 4 and 5 support, rendering the Mac version almost useless in it's current state.<br>
+Supported through DesktopGL, however, the OpenGL version is currently limited to 2.1. This limits you to shader model 2 and 3. 
+The main reason for using this fork is to get shader model 4 and 5 support, rendering the Mac version almost useless in its current state.<br>
 A higher OpenGL version (4.1) can be created by switching from the legacy to a core OpenGL context, but this causes follow-up problems that still need to be resolved.<br>
 Compute shaders won't be available through OpenGL at all, since MacOS doesn't support OpenGL 4.3.
 <br>
