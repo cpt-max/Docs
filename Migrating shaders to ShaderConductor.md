@@ -2,7 +2,7 @@
 # Migrating Shaders from MojoShader to ShaderConductor
 
 This only applies to OpenGL platforms.<br>
-You don't neccessarily have to migrate existing shaders, as MojoShader is still included. If all shaders in a file are shader model 2 or 3 MojoShader will automatically be used for shader compilation. This should ensure full backwards compatibility for existing projects.
+You don't necessarily have to migrate existing shaders, as MojoShader is still included. If all shaders in a file are shader model 2 or 3 MojoShader will automatically be used for shader compilation. This should ensure full backwards compatibility for existing projects.
 You can mix MojoShader and ShaderConductor shaders in the same project, only ShaderConductor can handle shader model 4 or 5 though.
 <br>
 
@@ -77,7 +77,7 @@ Texture2D MyTexture;
 // in C#
 effect.Parameters["MyTexture"].SetValue(myTexture);
 ```
-Unfortunately there are no effect parameters for samplers currently. If you want to assign a sampler state in C#, you have to bind by register. You should never rely on automatic register assignment in this case, even if there is only a single sampler in your shader. If you want to guarantee your sampler is bound to a specific register, you need to specify the register explicitly in HLSL.
+Unfortunately, there are no effect parameters for samplers currently. If you want to assign a sampler state in C#, you have to bind by register. You should never rely on automatic register assignment in this case, even if there is only a single sampler in your shader. If you want to guarantee your sampler is bound to a specific register, you need to specify the register explicitly in HLSL.
 ```HLSL
 // in HLSL
 SamplerState MySampler : register(s0);
@@ -89,11 +89,11 @@ GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 <br>
 
 ## Bool parameters get converted to int
-Boolean shader parameters are represented by integers in GLSL. As a consequence the parameter type in the effect's parameter collection will be EffectParameterType.Int32. In DirectX that same parameter will be of type EffectParameterType.Bool. Generally you won't notice this difference, because the standard pattern for setting bool parameters still works, even though under the hood it's an int:
+Boolean shader parameters are represented by integers in GLSL. As a consequence, the parameter type in the effect's parameter collection will be EffectParameterType.Int32. In DirectX that same parameter will be of type EffectParameterType.Bool. Generally you won't notice this difference, because the standard pattern for setting bool parameters still works, even though, under the hood it's an int:
 ```C#
 effect.Parameters["EnableLighting"].SetValue(true);
 ```
-You will notice the difference if you reflect on the parameter type though. A shader editor might do such a thing in order to create a checkbox for booleans, and a value field for integers. Hopefully this limitation can be resolved in the future.  
+You will notice the difference, if you reflect on the parameter type, though. A shader editor might do such a thing in order to create a checkbox for booleans, and a value field for integers. Hopefully, this limitation can be resolved in the future.  
 
 <br><br><br>
 <hr>
@@ -104,7 +104,7 @@ Some extra limitations apply when shader model 2 or 3 is used. This is necessary
 <br>
 
 ## No unsigned int with shader model 2 and 3
-This is a current limitation of SPIRV-Cross. Unfortunately array indices are converted to unsigned int by DirectXShaderCompiler, so this will generate an error.
+This is a current limitation of SPIRV-Cross. Unfortunately, array indices are converted to unsigned int by DirectXShaderCompiler, so this will generate an error.
 ```HLSL
 for(int i=0; i<10; i++)
     sum += someArray[i];
@@ -121,7 +121,7 @@ Updating a shader array via effect parameters only works for vs_4_0 and ps_4_0 o
 <br>
 <br>
 
-## Non square matrices are not supported with shader model 2 and 3
+## Non-square matrices are not supported with shader model 2 and 3
 <br>
 <br>
 
@@ -133,7 +133,7 @@ float Modulo(float x, float m)
     return x - floor(x/m) * m;
 }
 ```
-If you need specific behaviour for negative numbers it might get more complicated than this. 
+If you need specific behavior for negative numbers, it might get more complicated than this. 
 <br>
 <br>
 
