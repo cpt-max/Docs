@@ -63,7 +63,7 @@ float4 MyPixelShader(VertexOut input) : SV_TARGET
 ```
 Note the three things that changed:
 - **texture** becomes **Texture2D**. **Texture1D**, **Texture3D** and **TextureCube** are also possible.
-- **sampler2D** becomes just **sampler** without the dimension, same for **sampler1D**, **sampler3D** and **samperCUBE**
+- **sampler2D** becomes **SamplerState** without the dimension, same for **sampler1D**, **sampler3D** and **samperCUBE**
 - **tex2D()** becomes **MyTexture.Sample()**, same for **tex1D()**, **tex3D()** and **texCUBE()**. There are also DX10 equivalents for the more specialized texture sampling functions like **tex2Dlod()** which becomes **MyTexture.SampleLevel(MySampler, TexCoord, Level)**. More details about the available sampling functions can be found [here](https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-to-type).
 <br>
 <br>
