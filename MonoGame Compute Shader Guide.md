@@ -328,7 +328,7 @@ void CS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
     
     // modify pos and norm
 
-    Vertices.Store3(vertexByteInd, asuint(pos));
+    Vertices.Store3(posByteInd, asuint(pos));
     Vertices.Store3(normByteInd, asuint(norm));
 }
 ```
