@@ -192,8 +192,7 @@ particleBuffer.GetData(particles, 0, ParticleCount);
 
 ### 2.4 Consume Structured Buffer Data in other Shader Stage <a name="consume-in-other-stage"></a>
 
-You can't access an RWStructuredBuffer directly from non-compute stages, at least not in DirectX 11. 
-You need to add a regular StructuredBuffer instead. This means a single HLSL file may contain two definitions for the same buffer. 
+You can't access an RWStructuredBuffer directly from non-compute stages. You need to add a regular StructuredBuffer instead. This means a single HLSL file may contain two definitions for the same buffer. 
 
 ```HLSL
 StructuredBuffer<Particle> ParticlesReadOnly;
@@ -206,8 +205,8 @@ VertexOut VS(in VertexIn input)
     ...
 }
 ```
-
-While in DX you can read from a StructuredBuffer using shader model 4, in OpenGL you need to use shader model 5 (e.g. vs_5_0). 
+In DirectX pixel shaders can also write to buffers and textures, this is not yet implemented for OpenGL. 
+In DirectX you can read from a StructuredBuffer using shader model 4, in OpenGL you need to use shader model 5 (e.g. vs_5_0). 
 <br><br>
 
 
@@ -324,7 +323,7 @@ void CS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
     uint posByteInd = vertexID * 32; // 32 bytes per vertex element: float3 position, float3 normal, float2 texCoord => 8 floats => 32 bytes 
     uint normByteInd = posByteInd + 12; // 12 is the byte size for the float3 position element
     
-    float3 pos  = asfloat(Vertices.Load3(vertexByteInd));
+    float3 pos  = asfloat(Vertices.Load3(posByteInd));
     float3 norm = asfloat(Vertices.Load3(normByteInd)); 
     
     // modify pos and norm
