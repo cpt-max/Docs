@@ -8,6 +8,11 @@ You can switch packages by right-clicking a project in Visual Studio, then selec
   <PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.3" />
 </ItemGroup>
 ```
+The official MonoGame Nugets are still on .NET 6, while the newest compute Nugets are already .NET 8, so you may have to update the target framework in the .csproj file (which may require a newer version of Visual Studio):
+```XML
+<TargetFramework>.net8.0</TargetFramework>
+```
+If you don't want to switch to .NET 8 just yet, you can use the older 3.8.2.* compute Nugets, which are still .NET 6. 
 
 If you are already building MonoGame from source, there's nothing special, just switch (or merge) to the compute fork.<br>
 Don't forget that you have to use the updated content builder (MGCB and MGFXC) for compiling your content.
