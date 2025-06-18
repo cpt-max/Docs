@@ -503,5 +503,6 @@ foreach (var pass in effect.CurrentTechnique.Passes)
 
 - Writing to cubemaps, texture arrays, or into specific texture mipmap levels is currently not possible. However, you can use the new CopyData() functions for textures as a workaround. Write to a regular texture and then copy the data into cubemap faces, mipmap levels, or array slices. Since the copying happens on the GPU, it's relatively efficient.
 - When you call GetData() on a structured buffer, where the corresponding struct contains a bool parameter, you will get an exception, telling you that bool is not a blittable type. Just use int instead.
+- Type `Matrix` in buffers will not be automatically transposed in HLSL when sending it to the shader, unlike setting a Matrix shader effect parameter. As a result, matrices will be the transpose of what you'd expect. When setting the data into the buffer in C#, make sure to call `Transpose()` to get the expected results in HLSL. 
 
 <br><br><br>
